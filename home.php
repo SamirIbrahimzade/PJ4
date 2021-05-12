@@ -41,28 +41,33 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
             <button class="form_button profile" type="submit" name="profile">Profile</button>
             <br>
             <?php
-            if (isset($_POST['update'])) {
-                $uname = $_SESSION['uname'];
-                $date = $_POST['date'];
-                $_SESSION['date'] = $date;
-                $query = "SELECT * FROM `user_symptom` WHERE `username` = '$uname' AND `date` = '$date'";
-                $tuple = mysqli_query($connect, $query);
-                $count = mysqli_num_rows($tuple);
-            }
-            else {
-                $uname = $_SESSION['uname'];
-                $query = "SELECT * FROM `user_symptom` WHERE `username` = '$uname' ORDER BY `date` DESC LIMIT 1";
+            $uname = $_SESSION['uname'];
+            $query = "SELECT * FROM `user_symptom` WHERE `username` = '$uname' ORDER BY `date` DESC LIMIT 1";
+            $tuple = mysqli_query($connect, $query);
+            $count = mysqli_num_rows($tuple);
 
-                $tuple = mysqli_query($connect, $query);
-                $field_info = mysqli_fetch_assoc($tuple);
-                $_SESSION['date'] = $field_info['date'];
+            if($count == 1) {
+                if (isset($_POST['update'])) {
+                    $uname = $_SESSION['uname'];
+                    $date = $_POST['date'];
+                    $_SESSION['date'] = $date;
+                    $query = "SELECT * FROM `user_symptom` WHERE `username` = '$uname' AND `date` = '$date'";
+                    $tuple = mysqli_query($connect, $query);
+                    $count = mysqli_num_rows($tuple);
+                } else {
+                    $uname = $_SESSION['uname'];
+                    $query = "SELECT * FROM `user_symptom` WHERE `username` = '$uname' ORDER BY `date` DESC LIMIT 1";
 
-                $tuple = mysqli_query($connect, $query);
-                $count = mysqli_num_rows($tuple);
-            }
+                    $tuple = mysqli_query($connect, $query);
+                    $field_info = mysqli_fetch_assoc($tuple);
+                    $_SESSION['date'] = $field_info['date'];
 
-            if ($count == 1) {
-                echo '    
+                    $tuple = mysqli_query($connect, $query);
+                    $count = mysqli_num_rows($tuple);
+                }
+
+                if ($count == 1) {
+                    echo '    
                     <table class="home_table">         
                     <caption>Critical Symptoms</caption>   
                     <tr class="row">
@@ -70,25 +75,26 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                         <th class="header">Body Temperature</th>
                         <th class="header">Difficulty Breathing</th>
                     </tr>';
-                while ($fetch = mysqli_fetch_array($tuple)) {
-                    echo '
+                    while ($fetch = mysqli_fetch_array($tuple)) {
+                        echo '
                     <tr class="row">
                         <td class="data">%' . $fetch['oxygen_saturation'] . '</td>
                         <td class="data">' . $fetch['body_temperature'] . ' &#8451</td>
                         <td class="data">' . $fetch['difficulty_breathing'] . '</td>
                     </tr>';
-                }
-                echo '</table>';
+                    }
+                    echo '</table>';
 
-                $date = $_SESSION['date'];
-                $query = "SELECT * FROM `user_symptom` WHERE `username` = '$uname' AND `date` = '$date'";
-                $tuple = mysqli_query($connect, $query);
-                $field_info = mysqli_fetch_assoc($tuple);
+                    $date = $_SESSION['date'];
+                    $query = "SELECT * FROM `user_symptom` WHERE `username` = '$uname' AND `date` = '$date'";
+                    $tuple = mysqli_query($connect, $query);
+                    $field_info = mysqli_fetch_assoc($tuple);
 
-                if($field_info['oxygen_saturation'] < 94 || $field_info['body_temperature'] > 38.5 ||
-                    strcmp($field_info['difficulty_breathing'], "difficult") == 0 || strcmp($field_info['difficulty_breathing'], "pretty difficult") == 0) {
-                    echo '<h3 class="form_title alert">Your symptoms are severe!</h3>';
-                    echo '<h3 class="form_title alert">Please seek professional help!</h3>';
+                    if ($field_info['oxygen_saturation'] < 94 || $field_info['body_temperature'] > 38.5 ||
+                        strcmp($field_info['difficulty_breathing'], "difficult") == 0 || strcmp($field_info['difficulty_breathing'], "pretty difficult") == 0) {
+                        echo '<h3 class="form_title alert">Your symptoms are severe!</h3>';
+                        echo '<h3 class="form_title alert">Please seek professional help!</h3>';
+                    }
                 }
             }
             else {
