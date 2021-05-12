@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpunit bootsrap="vendor/autoload.php"
+    colors="true"
+    stopOnFailure="false"
+    processIsolation="true"
+    >
+
+    <testsuites>
+
+        <testsuite name = "pj4">
+            <directory>tests</directory>
+
+        </testsuite>
+
+    </testsuites>
+</phpunit>
